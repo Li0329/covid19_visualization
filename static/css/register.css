@@ -1,0 +1,61 @@
+body
+{
+    margin: 0;
+    padding: 0;
+    background-image: url("pexels-mihis-alex-21014.jpg");
+    background-repeat: no-repeat;
+}
+
+
+#register-box
+{
+    margin: 200px auto 0;
+    padding: 20px 50px;
+    background-color: antiquewhite;
+    width: 500px;
+    height: 300px;
+    border: radius 10px;
+    text-align: center;
+    background-image: linear-gradient(to top, #dfe9f3 100%, white 50%);
+}
+
+#register-box .register
+{
+    margin-top:50px;
+}
+
+#register-box .register .input-box
+{
+    margin-top:10px;
+}
+
+#register-box .register .input-box input
+{
+    border: 0;
+    padding:5px 5px;
+    border-bottom: 1px solid white;
+    background-color:wheat;
+    color:#000;
+}
+
+#register-box .register .confirm_button 
+{
+    border: 0;
+    width: 80px;
+    height: 25px;
+    color:burlywood;
+    margin-top: 20px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+#register-box .back_button 
+{
+    border: 0;
+    width: 80px;
+    height:80px;
+    color:black;
+    margin-top: 50px;
+    border-radius: 20px;
+    cursor: pointer;
+}

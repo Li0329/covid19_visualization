@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册界面</title>
+    <link rel="stylesheet" href="../../static/css/register.css">
+    <script>
+        function jump_to_login()
+        {
+            window.location = 'http://127.0.0.1:8000/login/'
+        }
+    </script>
+</head>
+<body>
+    <div id = 'register-box'>
+        <span style="color: darkred">{{ warning }}</span>
+        <input type = 'button' onclick = "jump_to_login()" value = '返回' style = "font-size: x-large;">
+    </div>
+</body>
+</html>

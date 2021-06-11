@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>注册界面</title>
+    <script src="../../static/js/register.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="../../static/css/register.css" />
+  </head>
+  <body>
+    <div id="register-box">
+      <h2 style="color: #000">欢迎使用本系统,请注册</h2>
+      <form class="register" action="" method="post" >
+          <span style="color: darkred">{{ warning }}</span>
+          {% csrf_token %}
+        <div class="input-box">
+          <label>用户名</label>
+          <input
+            name="user"
+            type="text"
+            placeholder="用户名就是你的账号哈"
+            maxlength="20"
+          />
+        </div>
+        <div class="input-box">
+          <label>密码</label>
+          <input
+            id="pwd"
+            name="pwd"
+            type="password"
+            placeholder="请输入密码"
+            maxlength="20"
+          />
+        </div>
+        <div class="input-box">
+          <label>确认密码</label>
+          <input
+            id="pwd_2"
+            type="password"
+            placeholder="请再次输入密码"
+            maxlength="20"
+            onkeyup="validate()"
+          /><span id="warning"></span>
+        </div>
+        <div class="input-box">
+          <label>邮箱地址</label>
+          <input
+            name="mailbox"
+            type="text"
+            placeholder="请输入你的邮箱地址"
+            maxlength="20"
+          />
+        </div>
+        <input name = 'confirm' class="confirm_button" type="submit" value="确定" />
+        <input class="confirm_button" type="reset" value="重置" />
+      </form>
+    </div>
+  </body>
+</html>
