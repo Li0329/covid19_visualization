@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale = 1"/>
+    <link rel="stylesheet" href="../../static/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../static/css/map_show.css"/>
+    <title>数据分析</title>
+</head>
+<body>
+<div class="wrapper">
+    <!-- Sidebar Holder -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>疫情可视化系统</h3>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li>
+                <a href = "http://127.0.0.1:8000/map_show/">地图展示</a
+                >
+            </li>
+            <li>
+                <a href="http://127.0.0.1:8000/data_show/">数据展示</a>
+            </li>
+            <li class = "active">
+                <a>数据分析</a>
+            </li>
+            <li>
+                <a href="https://github.com/Li0329/covid19_visualization"><i class="fa fa-github">欢迎关注</i
+                ></a>
+            </li>
+            <li>
+                <a href="http://127.0.0.1:8000/admin/"><i class="fa fa-door-open">后台管理</i></a>
+            </li>
+        </ul>
+    </nav>
+
+    <!--侧边栏与主页面内容切换-->
+    <div id="content">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="navbar-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <button
+                        class="btn btn-dark d-inline-block d-lg-none ml-auto"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation"
+                >
+                    <i class="fas fa-align-justify"></i>
+                </button>
+                <h5><i class="fa fa-bar-chart"></i>&nbsp;数据分析部分</h5>
+            </div>
+        </nav>
+        test
+    </div>
+</div>
+
+<script src="../../static/jquery/dist/jquery.min.js"></script>
+<script src="../../static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#sidebarCollapse").on("click", function () {
+            $("#sidebar").toggleClass("active");
+            $(this).toggleClass("active");
+        });
+    });
+</script>
+</body>
+</html>

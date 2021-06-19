@@ -1,19 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale = 1">
-    <link rel="stylesheet" href="../../static/bootstrap/dist/css/bootstrap.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale = 1" />
+    <script src="../../static/mapbox-gl/dist/mapbox-gl.js"></script>
+    <link rel="stylesheet" href="../../static/mapbox-gl/dist/mapbox-gl.css">
+    <link
+    rel="stylesheet"
+    href="../../static/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+    rel="stylesheet"
+    href="../../static/font-awesome/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="../../static/css/map_show.css" />
     <title>地图展示页面</title>
-</head>
-<body>
-  
-  
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Sidebar Holder -->
+      <nav id="sidebar">
+        <div class="sidebar-header">
+          <h3>疫情可视化系统</h3>
+        </div>
+
+        <ul class="list-unstyled components">
+          <li class="active">
+            <a>地图展示</a
+            >
+          </li>
+          <li>
+            <a href="http://127.0.0.1:8000/data_show/">数据展示</a>
+          </li>
+          <li>
+            <a href="http://127.0.0.1:8000/data_analysis/">数据分析</a>
+          </li>
+          <li>
+            <a href="https://github.com/Li0329/covid19_visualization"><i class="fa fa-github">欢迎关注</i
+              ></a>
+          </li>
+          <li>
+            <a href="http://127.0.0.1:8000/admin/"><i class="fa fa-door-open">后台管理</i></a>
+          </li>
+        </ul>
+      </nav>
+      
+      <!--侧边栏与主页面内容切换-->
+      <div id="content">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="container-fluid">
+            <button type="button" id="sidebarCollapse" class="navbar-btn">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <button
+            class="btn btn-dark d-inline-block d-lg-none ml-auto"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            >
+            <i class="fas fa-align-justify"></i>
+          </button>
+          <h5><i class="fa fa-map"></i>&nbsp;地图展示部分</h5>          
+          </div>
+        </nav>
 
 
+      <div id = 'map' 
+      style = 
+      "position:absolute;
+      top: 100px;
+      bottom: 0;
+      width:100%;">
+      </div>
+      </div>
+    </div>
+    
 
-  <script src="../../static/jquery/dist/jquery.min.js"></script>
-  <script src="../../static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  
-</body>
+
+    
+    
+    <script src="../../static/jquery/dist/jquery.min.js"></script>
+    <script src="../../static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $("#sidebarCollapse").on("click", function () {
+          $("#sidebar").toggleClass("active");
+          $(this).toggleClass("active");
+        });
+      });
+      </script>
+      <script type="text/javascript">
+            mapboxgl.accessToken = 'pk.eyJ1Ijoic3RlbGxhcmllcyIsImEiOiJja3A0MXBiem4wNXFkMnBrdmtpMDNrcXdxIn0.MeuGfsk97FzixI08TQ5PXw';
+            var map = new mapboxgl.Map({
+              container:'map',
+              style:'mapbox://styles/stellaries/ckpzbz6ei1d1i17k8xgyt0yp6',
+              center: [-74.5, 40], // starting position [lng, lat]
+              zoom: 9 // starting zoom
+            });
+
+        </script>
+
+  </body>
 </html>

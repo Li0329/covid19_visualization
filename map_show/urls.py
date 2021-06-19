@@ -3,5 +3,5 @@ from .import views
 
 
 urlpatterns = [
-    path('',views.show,name = 'show')
+    path('',views.show,name = 'map_show')
 ]

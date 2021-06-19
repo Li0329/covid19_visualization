@@ -15,5 +15,6 @@ class UserInfo(models.Model):
     password = models.CharField(max_length=128)
     email_address = models.EmailField(unique=True)
 
+    # 定义模型显示信息
     def __str__(self):
         return self.username

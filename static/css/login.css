@@ -1,41 +1,31 @@
-body
-{
-    margin: 0;
-    padding: 0;
-    background-image: url("pexels-mihis-alex-21014.jpg");
-    background-repeat: no-repeat;
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url("pexels-mihis-alex-21014.jpg");
+  background-repeat: no-repeat;
 }
 
-
-#login-box
-{
-    margin: 200px auto 0;
-    padding: 20px 50px;
-    background-color: antiquewhite;
-    width: 400px;
-    height: 300px;
-    border-radius:20px solid;
-    text-align: center;
-    background-image: linear-gradient(to top, #dfe9f3 100%, white 50%);
+#login-box {
+  margin: 100px auto 0;
+  padding: 20px 50px;
+  background-color: antiquewhite;
+  border-radius: 50px solid;
+  text-align: center;
+  background-image: linear-gradient(to top, #e0e1e2 100%, white 50%);
 }
 
-#login-box .login
-{
-    margin-top:50px;
+#login-box .login {
+  margin-top: 50px;
 }
 
-#login-box .login .input-box
-{
-    margin-top:20px;
+#login-box .login .input-box {
+  margin-top: 20px;
 }
 
-#login-box .login .input-box input
-{
-    border: 0;
-    padding:10px 10px;
-    border-bottom: 1px solid white;
-    background-color:wheat;
-    color:#000;
+#login-box .login .input-box input {
+  border: 0;
+  padding: 10px 10px;
+  border-bottom: 1px solid white;
+  background-color: wheat;
+  color: #000;
 }
-
-

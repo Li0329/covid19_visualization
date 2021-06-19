@@ -40,12 +40,19 @@ def User_Register(request):
         username = request.POST.get('user')
         password = request.POST.get('pwd')
         email_address = request.POST.get('mailbox')
+        if len(username) == len(password) == len(email_address) == 0:
+            warning = "你咋啥也妹输啊？"
+            return render(request, 'User/register.html',locals())
         receiver.append(email_address)
         user_valid = UserInfo.objects.filter(username=username)
         if user_valid:
             warning = "该用户已存在！"
             return render(request,'User/register.html',locals())
         else:
+            mailcheck = UserInfo.objects.filter(email_address=email_address)
+            if mailcheck:
+                warning = "该邮箱已被注册！"
+                return render(request,'User/register.html',locals())
             user = UserInfo.objects.create(username=username, password=password,email_address=email_address)
             user.save()
             send_mail('尊敬的用户！', '恭喜您注册成功！欢迎继续使用本系统', 'haxk1024@qq.com', receiver, fail_silently=False)

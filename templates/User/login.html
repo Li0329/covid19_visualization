@@ -20,18 +20,19 @@
     <strong>哦！让我们瞧瞧会发生什么</strong>&nbsp;{{ warning }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
-    <div id="login-box">
-        <h2 style="color: #000" class="text-center">全球新冠疫情可视化系统</h2>
+    <div id="login-box" style="border-radius: 20px;width: 400px;
+    height: 380px;">
+        <h2 style="color: #000" class="text-center text-muted">新冠疫情可视化系统</h2>
        <form class = "login" action="" method="post">
-        {% csrf_token %}
            <div class = 'input-box form-floating mb-3'>
                <input id = 'floatingInput' class = "form-control" name = 'user' type = "text" placeholder="请输入用户名" maxlength="20">
-               <label for = "floatingInput">账号</label>
+               <label for = "floatingInput" style = "font-size:16px">账号</label>
             </div>
             <div class = 'input-box form-floating'>
                 <input id = 'floatingPassword' class="form-control" name = 'pwd' type="password" placeholder="请输入密码" maxlength="20">
-                <label for = "floatingPassword">密码</label>
+                <label for = "floatingPassword" style = "font-size:16px">密码</label>
             </div>
+            <div style = "margin: 20px;"></div>
             <button name = "register" class="btn btn-primary btn btn-lg btn-block" type = "button" onclick="jump_to_register()">
                 <i class="fa fa-smile-o"></i>注册</button>
             <button name = "login" class = "btn btn-success btn btn-lg btn-block" type = "submit"><i class="fa fa-sign-in"></i>登录</button>

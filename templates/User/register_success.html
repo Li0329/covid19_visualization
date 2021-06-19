@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>注册界面</title>
+    <title>注册成功界面</title>
+    <link rel="stylesheet" href="../../static/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../../static/css/register.css">
     <script>
         function jump_to_login()
@@ -14,7 +16,10 @@
 <body>
     <div id = 'register-box'>
         <span style="color: darkred">{{ warning }}</span>
-        <input type = 'button' onclick = "jump_to_login()" value = '返回' style = "font-size: x-large;">
+        <button type = 'submit'
+        class = "btn btn-primary btn btn-lg btn-block"  
+        onclick = "jump_to_login()">返回</button>
     </div>
+    <script src="../../static/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
