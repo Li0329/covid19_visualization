@@ -70,6 +70,18 @@
         </nav>
 
 
+          <script
+                  src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.min.js'></script>
+          <link rel='stylesheet'
+                href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.3.0/mapbox-gl-geocoder.css'
+                type='text/css' />
+          <style>
+              .mapboxgl-popup {
+                  max-width: 400px;
+                  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+              }
+          </style>
+
       <div id = 'map' 
       style = 
       "position:absolute;
@@ -96,14 +108,333 @@
       });
       </script>
       <script type="text/javascript">
-            mapboxgl.accessToken = 'pk.eyJ1Ijoic3RlbGxhcmllcyIsImEiOiJja3A0MXBiem4wNXFkMnBrdmtpMDNrcXdxIn0.MeuGfsk97FzixI08TQ5PXw';
-            var map = new mapboxgl.Map({
-              container:'map',
-              style:'mapbox://styles/stellaries/ckpzbz6ei1d1i17k8xgyt0yp6',
-              center: [-74.5, 40], // starting position [lng, lat]
-              zoom: 9 // starting zoom
-            });
+          mapboxgl.accessToken = 'pk.eyJ1Ijoic3RlbGxhcmllcyIsImEiOiJja3A0MXBiem4wNXFkMnBrdmtpMDNrcXdxIn0.MeuGfsk97FzixI08TQ5PXw';
+          var map = new mapboxgl.Map({
+              container: 'map', // container id
+              style: 'mapbox://styles/stellaries/ckpzbz6ei1d1i17k8xgyt0yp6', // 自定义样式的位置
+              center: [0, 0], // 初始中心点位置
+              zoom: 3, // 初始缩放级别
+          });
 
+
+          //以下是3d建筑显示功能
+          map.on('load', function () {
+              var layers = map.getStyle().layers;
+              var labelLayerId;
+              for (var i = 0; i < layers.length; i++) {
+                  if (layers[i].type === 'symbol' && layers[i].layout['text-field']) { //使添加的layer在所有layer之下
+                      labelLayerId = layers[i].id;
+                      break;
+                  }
+              }
+
+              map.addLayer({ //添加一个新的layer
+                  'id': '3d-buildings',
+                  'source': 'composite',
+                  'source-layer': 'building',
+                  'filter': ['==', 'extrude', 'true'],
+                  'type': 'fill-extrusion',
+                  'minzoom': 15,
+                  'paint': {
+                      'fill-extrusion-color': '#FFFF00',
+
+                      'fill-extrusion-height': [
+                          "interpolate", ["linear"], ["zoom"],
+                          15, 0,
+                          15.05, ["get", "height"]
+                      ],
+                      'fill-extrusion-base': [
+                          "interpolate", ["linear"], ["zoom"],
+                          15, 0,
+                          15.05, ["get", "min_height"]
+                      ],
+                      'fill-extrusion-opacity': .6
+                  }
+              }, labelLayerId);
+          });
+
+          var geocoder = new MapboxGeocoder({ //使用mapbox-gl-gecoder控件来实现查找功能
+              accessToken: mapboxgl.accessToken,
+              flyTo: { //实现以飞行的动画方式跳转到搜索位置
+                  bearing: 3,
+                  speed: 1, // 飞行速度
+                  curve: 2, // 改变缩小速度
+                  easing: function (t) { return t; }
+              },
+              mapboxgl: mapboxgl
+          });
+          map.addControl(geocoder);
+          map.on('load', function () {
+              map.addLayer({
+                  'id': 'states-layer',
+                  'type': 'fill',
+                  'source': {
+                      'type': 'geojson',
+                      'data': 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_1_states_provinces_shp.geojson'
+                  },
+                  'paint': {
+                      'fill-color': 'rgba(200, 100, 240, 0.4)',
+                      'fill-outline-color': 'rgba(200, 100, 240, 1)'
+                  }
+              });
+
+              map.on('click', 'states-layer', function (e) {
+                  new mapboxgl.Popup()
+                      .setLngLat(e.lngLat)
+                      .setHTML(e.features[0].properties.name)
+                      .addTo(map);
+              });
+
+              map.on('mouseenter', 'states-layer', function () {
+                  map.getCanvas().style.cursor = 'pointer';
+              });
+
+              map.on('mouseleave', 'states-layer', function () {
+                  map.getCanvas().style.cursor = '';
+              });
+          });
+
+          var hoveredStateId = null;
+
+          map.on('load', function () {
+              map.addSource("states", {
+                  "type": "geojson",
+                  "data": "https://docs.mapbox.com/mapbox-gl-js/assets/us_states.geojson"
+              });
+
+              map.addLayer({
+                  "id": "state-fills",
+                  "type": "fill",
+                  "source": "states",
+                  "layout": {},
+                  "paint": {
+                      "fill-color": "#627BC1",
+                      "fill-opacity": ["case",
+                          ["boolean", ["feature-state", "hover"], false],
+                          1,
+                          0.5
+                      ]
+                  }
+              });
+
+              map.addLayer({
+                  "id": "state-borders",
+                  "type": "line",
+                  "source": "states",
+                  "layout": {},
+                  "paint": {
+                      "line-color": "#627BC1",
+                      "line-width": 2
+                  }
+              });
+
+
+
+              map.on("mousemove", "state-fills", function (e) {
+                  if (e.features.length > 0) {
+                      if (hoveredStateId) {
+                          map.setFeatureState({ source: 'states', id: hoveredStateId }, { hover: false });
+                      }
+                      hoveredStateId = e.features[0].id;
+                      map.setFeatureState({ source: 'states', id: hoveredStateId }, { hover: true });
+                  }
+              });
+
+              map.on("mouseleave", "state-fills", function () {
+                  if (hoveredStateId) {
+                      map.setFeatureState({ source: 'states', id: hoveredStateId }, { hover: false });
+                  }
+                  hoveredStateId = null;
+              });
+          });
+          map.on('load', function () {
+
+              var width = 15;
+              var bytesPerPixel = 4;
+              var data = new Uint8Array(width * width * bytesPerPixel);
+
+              for (var x = 0; x < width; x++) {
+                  for (var y = 0; y < width; y++) {
+                      var offset = (y * width + x) * bytesPerPixel;
+                      data[offset + 0] = y / width * 255; // red
+                      data[offset + 1] = x / width * 255; // green
+                      data[offset + 2] = 128;             // blue
+                      data[offset + 3] = 255;             // alpha
+                  }
+              }
+              map.loadImage(
+                  '../../static/标记.png',
+                  function (error,image) {
+                      if(error)throw error;
+
+                      map.addImage('gradient', image)});
+
+              map.addLayer({
+                  "id": "places",
+                  "type": "symbol",
+                  "source": {
+                      "type": "geojson",
+                      "data": {
+                          "type": "FeatureCollection",
+                          "features": [{
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>成都信息工程大学航空港校区</strong><p>成都信息工程大学"
+                                      +"（Chengdu University of Information Technology），简称“成信大”，由中国气象局和四川省人民政府共建，"
+                                      +"入选教育部首批“卓越工程师教育培养计划”试点高校、“四川2011计划”、“中西部高校基础能力建设工程”、"
+                                      +"数据中国“百校工程”、四川省“双一流”建设计划、国家级大学生创新创业训练计划，为国际CDIO组织正式成员、"
+                                      +"中国CDIO工程教育模式试点工作组副组长单位和CDIO工程教育联盟、中国气象人才培养联盟、"
+                                      +"成渝地区双城经济圈高校联盟创始成员。成都信息工程大学有航空港、龙泉两个校区，占地面积2000余亩；"
+                                      +"下设17个二级学院，开办57个本科专业；有2个省级“一流学科建设”学科，5个省级重点学科；有1个博士后科研工作站，"
+                                      +"11个硕士学位授权一级学科，8个硕士专业学位授权类别；有21000余名全日制在校本科生和近2600名研究生 ；"
+                                      +"有专任教师1200余人，其中博士500余人，高级职称近600人。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [103.986956,30.583767]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>成都双流机场</strong><p>简称双流机场，是中国四川省成都市的一座机场，"
+                                      +"位于中心城区西南方向约16千米的双流区北部。机场飞行区等级为最高的4F级，拥有两条长3600米的平行跑道、"
+                                      +"两座客运航站楼等设施。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [103.948102,30.560864]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>成都大熊猫基地</strong><p>成都大熊猫繁育研究基地，"
+                                      +"是中国政府实施大熊猫等濒危野生动物迁地保护工程的主要研究基地之一，国家AAAA级旅游景区。"
+                                      +"是我国乃至全球知名的集大熊猫科研繁育、保护教育、教育旅游、熊猫文化建设为一体的大熊猫等珍稀濒危野生"
+                                      +"动物保护研究机构。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [104.142103,30.739255]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>四川大学望江校区</strong><p>四川大学（Sichuan University），简称“川大”，"
+                                      +"是教育部直属、中央直管副部级的全国重点大学；位列国家211工程、985工程、世界一流大学建设高校（A类），"
+                                      +"入选珠峰计划、2011计划、111计划、强基计划、卓越工程师教育培养计划、卓越医生教育培养计划、卓越法律人才"
+                                      +"教育培养计划、国家建设高水平大学公派研究生项目、全国深化创新创业教育改革示范高校，为学位授权自主审核单位、"
+                                      +"中国研究生院院长联席会会员、医学“双一流”建设联盟成员、自主划线高校，是国家布局在中国西部重点建设的高水平研"
+                                      +"究型综合大学。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [104.080966,30.633358]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>电子科技大学</strong><p>电子科技大学（University of Electronic Science and Technology of China）"
+                                      +"坐落于四川省会成都市，简称“电子科大”，是中华人民共和国教育部直属高校，由教育部、工业和信息化部、四川省和成都市共建；"
+                                      +"位列“世界一流大学和一流学科”、“985工程”、“211工程”，入选“2011计划”、“111计划”、卓越工程师教育培养计划、"
+                                      +"国家建设高水平大学公派研究生项目、中国政府奖学金来华留学生接收院校、全国深化创新创业教育改革示范高校，"
+                                      +"为“两电一邮”成员；是一所完整覆盖整个电子类学科，以电子信息科学技术为核心，以工为主，理工渗透，理、"
+                                      +"工、管、文、医协调发展的多科性研究型全国重点大学。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [103.929431,30.752518]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>故宫</strong><p>北京故宫是中国明清两代的皇家宫殿，旧称紫禁城，位于北京中轴线的中心。"
+                                      +"北京故宫以三大殿为中心，占地面积约72万平方米，建筑面积约15万平方米，有大小宫殿七十多座，房屋九千余间。"
+                                      +"北京故宫是世界上现存规模最大、保存最为完整的木质结构古建筑之一，是国家AAAAA级旅游景区， 1961年被列为第一"
+                                      +"批全国重点文物保护单位； 1987年被列为世界文化遗产。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [116.390627,39.915722]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>圆明园遗址</strong><p>圆明园是中国清代大型皇家园林，位于北京市海淀区，始建于1707年"
+                                      +"（清康熙四十六年），由圆明园及其附园长春园和绮春园（后改名万春园）组成，也叫圆明三园，有“万园之园”之称。"
+                                      +"清帝每到盛夏就来此避暑、听政，故圆明园又称“夏宫”。1860年第二次鸦片战争期间，圆明园遭英法联军洗劫并烧毁，"
+                                      +"故址现为圆明园遗址公园</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [116.296693,40.007764]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>北京大学</strong><p>北京大学（Peking University），简称“北大”，是中华人民共和国教"
+                                      +"育部直属的全国重点大学，位列“双一流”、“211工程”、“985工程”，入选“学位授权自主审核单位”、“基础学科拔尖学"
+                                      +"生培养试验计划”、“基础学科招生改革试点”、“高等学校创新能力提升计划”、“高等学校学科创新引智计划”，为九校联盟、"
+                                      +"松联盟、中国大学校长联谊会、京港大学联盟、亚洲大学联盟、东亚研究型大学协会、国际研究型大学联盟、环太平洋大学"
+                                      +"联盟、全球大学校长论坛、21世纪学术联盟、东亚四大学论坛、国际公立大学论坛、中俄综合性大学联盟成员。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [116.304949,39.992435]
+                              }
+                          }, {
+                              "type": "Feature",
+                              "properties": {
+                                  "description": "<strong>清华大学</strong><p>清华大学（Tsinghua University），简称“清华”，是中华人民共和国教"
+                                      +"育部直属的全国重点大学，位列国家“双一流”A类、“985工程”、“211工程”，入选“2011计划”、“珠峰计划”、“强基计划”、"
+                                      +"“111计划”，为九校联盟（C9）、松联盟、中国大学校长联谊会、亚洲大学联盟、环太平洋大学联盟、清华—剑桥—MIT低碳"
+                                      +"大学联盟成员、中国高层次人才培养和科学技术研究的基地，被誉为“红色工程师的摇篮”。</p>",
+                                  "icon": "gradient"
+                              },
+                              "geometry": {
+                                  "type": "Point",
+                                  "coordinates": [116.320399,40.003697]
+                              }
+                          }]
+                      }
+                  },
+                  "layout": {
+                      "icon-image": "gradient",
+                      "icon-allow-overlap":true
+                  }
+              });
+          });
+
+          var popup = new mapboxgl.Popup({
+              closeButton: false,
+              closeOnClick: false
+          });
+
+          map.on('mouseenter', 'places', function (e) {
+              map.getCanvas().style.cursor = 'pointer';
+
+              var coordinates = e.features[0].geometry.coordinates.slice();
+              var description = e.features[0].properties.description;
+              while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                  coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+              }
+
+              popup.setLngLat(coordinates)
+                  .setHTML(description)
+                  .addTo(map);
+          });
+
+          map.on('mouseleave', 'places', function () {
+              map.getCanvas().style.cursor = '';
+              popup.remove();
+          });
         </script>
 
   </body>
